@@ -260,7 +260,6 @@ class PieTheme {
     PieAnchor? customAngleAnchor,
     Alignment? menuAlignment,
     Offset? menuDisplacement,
-    double? buttonSize,
     double? buttonWidth,
     double? buttonHeight,
     double? pointerSize,
