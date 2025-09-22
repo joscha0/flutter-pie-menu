@@ -1,6 +1,6 @@
 name: pie_menu_example
 description: An example project for Flutter Pie Menu.
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:

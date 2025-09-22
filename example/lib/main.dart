@@ -185,6 +185,8 @@ class StylingPage extends StatelessWidget {
                                 iconColor: Colors.black,
                               ),
                               brightness: Brightness.dark,
+                              buttonHeight: 30,
+                              buttonWidth: 60,
                             ),
                             actions: [
                               PieAction.builder(

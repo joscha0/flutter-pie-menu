@@ -51,6 +51,8 @@ class PieTheme {
     this.menuAlignment,
     this.menuDisplacement = Offset.zero,
     this.buttonSize = 56,
+    this.buttonWidth,
+    this.buttonHeight,
     this.pointerSize = 40,
     this.tooltipPadding = const EdgeInsets.all(32),
     this.tooltipTextStyle,
@@ -139,6 +141,12 @@ class PieTheme {
 
   /// Size of [PieButton] circle.
   final double buttonSize;
+
+  /// Width of [PieButton].
+  final double? buttonWidth;
+
+  /// Height of [PieButton].
+  final double? buttonHeight;
 
   /// Size of the widget displayed in the center of [PieMenu].
   final double pointerSize;
@@ -257,6 +265,8 @@ class PieTheme {
     Alignment? menuAlignment,
     Offset? menuDisplacement,
     double? buttonSize,
+    double? buttonWidth,
+    double? buttonHeight,
     double? pointerSize,
     EdgeInsets? tooltipPadding,
     TextStyle? tooltipTextStyle,
@@ -302,6 +312,8 @@ class PieTheme {
       menuAlignment: menuAlignment ?? this.menuAlignment,
       menuDisplacement: menuDisplacement ?? this.menuDisplacement,
       buttonSize: buttonSize ?? this.buttonSize,
+      buttonWidth: buttonWidth ?? this.buttonWidth,
+      buttonHeight: buttonHeight ?? this.buttonHeight,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
       tooltipTextStyle: tooltipTextStyle ?? this.tooltipTextStyle,
