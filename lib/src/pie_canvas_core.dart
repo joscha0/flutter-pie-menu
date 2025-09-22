@@ -156,7 +156,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   /// Detect whether near edges/corners, then reduce the angle span accordingly.
   double get _maxAllowedArc {
-    return _actions.length * _theme.radius / 4;
+    if (_actions.isEmpty || _actions.length == 1) return 0;
+    if (_actions.length < 4) return 90;
+    return 180;
   }
 
   double get _angleDiff {
