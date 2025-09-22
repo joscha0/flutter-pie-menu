@@ -185,8 +185,8 @@ class StylingPage extends StatelessWidget {
                                 iconColor: Colors.black,
                               ),
                               brightness: Brightness.dark,
-                              buttonHeight: 30,
-                              buttonWidth: 60,
+                              buttonHeight: 40,
+                              buttonWidth: 70,
                             ),
                             actions: [
                               PieAction.builder(
@@ -345,18 +345,25 @@ class StylingPage extends StatelessWidget {
   }
 
   Widget _buildTextButton(String text, bool hovered) {
-    return Row(
-      children: [
-        Text(
-          text,
-          style: TextStyle(
-            color: hovered ? Colors.black : Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: hovered ? Colors.lime[200] : Colors.black,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              color: hovered ? Colors.black : Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        Icon(Icons.abc, color: hovered ? Colors.black : Colors.white),
-      ],
+          Icon(Icons.abc, color: hovered ? Colors.black : Colors.white),
+        ],
+      ),
     );
   }
 }

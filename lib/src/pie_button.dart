@@ -95,8 +95,8 @@ class _PieButtonState extends State<PieButton>
     _previouslyOpen = _state.menuOpen;
 
     return OverflowBox(
-      maxHeight: _theme.buttonHeight ?? _theme.buttonSize * 2,
-      maxWidth: _theme.buttonWidth ?? _theme.buttonSize * 2,
+      maxHeight: (_theme.buttonHeight ?? _theme.buttonSize) * 2,
+      maxWidth: (_theme.buttonWidth ?? _theme.buttonSize) * 2,
       child: AnimatedScale(
         scale: widget.hovered ? 1.2 : 1,
         duration: _theme.hoverDuration,
@@ -122,29 +122,12 @@ class _PieButtonState extends State<PieButton>
                     ? (_theme.buttonWidth ?? _theme.buttonSize) / 2 -
                         cos(widget.angle) * _theme.hoverDisplacement
                     : (_theme.buttonWidth ?? _theme.buttonSize) / 2,
-                child: Container(
+                child: SizedBox(
                   height: _theme.buttonHeight ?? _theme.buttonSize,
                   width: _theme.buttonWidth ?? _theme.buttonSize,
-                  decoration: (widget.hovered
-                          ? _buttonThemeHovered.decoration
-                          : _buttonTheme.decoration) ??
-                      BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: widget.hovered
-                            ? _buttonThemeHovered.backgroundColor
-                            : _buttonTheme.backgroundColor,
-                      ),
                   child: Center(
-                    child: IconTheme(
-                      data: IconThemeData(
-                        color: widget.hovered
-                            ? _buttonThemeHovered.iconColor
-                            : _buttonTheme.iconColor,
-                        size: _theme.iconSize,
-                      ),
-                      child: _action.builder?.call(widget.hovered) ??
-                          _action.child!,
-                    ),
+                    child:
+                        _action.builder?.call(widget.hovered) ?? _action.child!,
                   ),
                 ),
               ),
