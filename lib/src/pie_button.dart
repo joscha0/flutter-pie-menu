@@ -95,8 +95,8 @@ class _PieButtonState extends State<PieButton>
     _previouslyOpen = _state.menuOpen;
 
     return OverflowBox(
-      maxHeight: (_theme.buttonHeight ?? _theme.buttonSize) * 2,
-      maxWidth: (_theme.buttonWidth ?? _theme.buttonSize) * 2,
+      maxHeight: (_theme.buttonHeight) * 2,
+      maxWidth: (_theme.buttonWidth) * 2,
       child: AnimatedScale(
         scale: widget.hovered ? 1.2 : 1,
         duration: _theme.hoverDuration,
@@ -115,16 +115,16 @@ class _PieButtonState extends State<PieButton>
                 duration: _theme.hoverDuration,
                 curve: Curves.ease,
                 top: widget.hovered
-                    ? (_theme.buttonHeight ?? _theme.buttonSize) / 2 -
+                    ? _theme.buttonHeight / 2 -
                         sin(widget.angle) * _theme.hoverDisplacement
-                    : (_theme.buttonHeight ?? _theme.buttonSize) / 2,
+                    : (_theme.buttonHeight) / 2,
                 right: widget.hovered
-                    ? (_theme.buttonWidth ?? _theme.buttonSize) / 2 -
+                    ? (_theme.buttonWidth) / 2 -
                         cos(widget.angle) * _theme.hoverDisplacement
-                    : (_theme.buttonWidth ?? _theme.buttonSize) / 2,
+                    : (_theme.buttonWidth) / 2,
                 child: SizedBox(
-                  height: _theme.buttonHeight ?? _theme.buttonSize,
-                  width: _theme.buttonWidth ?? _theme.buttonSize,
+                  height: _theme.buttonHeight,
+                  width: _theme.buttonWidth,
                   child: Center(
                     child:
                         _action.builder?.call(widget.hovered) ?? _action.child!,

@@ -50,9 +50,8 @@ class PieTheme {
     this.customAngleAnchor = PieAnchor.center,
     this.menuAlignment,
     this.menuDisplacement = Offset.zero,
-    this.buttonSize = 56,
-    this.buttonWidth,
-    this.buttonHeight,
+    this.buttonWidth = 56,
+    this.buttonHeight = 56,
     this.pointerSize = 40,
     this.tooltipPadding = const EdgeInsets.all(32),
     this.tooltipTextStyle,
@@ -139,14 +138,11 @@ class PieTheme {
   /// Displacement offset for the menu.
   final Offset menuDisplacement;
 
-  /// Size of [PieButton] circle.
-  final double buttonSize;
-
   /// Width of [PieButton].
-  final double? buttonWidth;
+  final double buttonWidth;
 
   /// Height of [PieButton].
-  final double? buttonHeight;
+  final double buttonHeight;
 
   /// Size of the widget displayed in the center of [PieMenu].
   final double pointerSize;
@@ -231,7 +227,7 @@ class PieTheme {
   final double childOpacityOnButtonHover;
 
   /// Displacement distance of [PieButton]s when hovered.
-  double get hoverDisplacement => buttonSize / 8;
+  double get hoverDisplacement => buttonWidth / 8;
 
   Color get effectiveOverlayColor {
     return overlayColor ??
@@ -311,7 +307,6 @@ class PieTheme {
       customAngleAnchor: customAngleAnchor ?? this.customAngleAnchor,
       menuAlignment: menuAlignment ?? this.menuAlignment,
       menuDisplacement: menuDisplacement ?? this.menuDisplacement,
-      buttonSize: buttonSize ?? this.buttonSize,
       buttonWidth: buttonWidth ?? this.buttonWidth,
       buttonHeight: buttonHeight ?? this.buttonHeight,
       pointerSize: pointerSize ?? this.pointerSize,

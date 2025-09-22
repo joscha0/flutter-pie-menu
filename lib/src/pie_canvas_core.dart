@@ -153,11 +153,17 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   double get px => _pointerOffset.dx - cx;
   double get py => _pointerOffset.dy - cy;
 
+  // Effective dimensions (backwards compatible with buttonSize).
+  double get _buttonW => _theme.buttonWidth;
+  double get _buttonH => _theme.buttonHeight;
+
+  double get _buttonDiagonal => sqrt(_buttonW * _buttonW + _buttonH * _buttonH);
+
   double get _angleDiff {
     final customAngleDiff = _theme.customAngleDiff;
     if (customAngleDiff != null) return customAngleDiff;
 
-    final tangent = (_theme.buttonSize / 2 + _theme.spacing) / _theme.radius;
+    final tangent = (_buttonDiagonal / 2 + _theme.spacing) / _theme.radius;
     final angleInRadians = 2 * asin(tangent);
     return degrees(angleInRadians);
   }
@@ -196,7 +202,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     final p = Offset(px, py);
     final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
-    final safeDistance = _theme.radius + _theme.buttonSize;
+    final safeDistance = _theme.radius + max(_buttonW, _buttonH);
 
     double angleBetween(Offset o1, Offset o2) {
       final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
@@ -441,7 +447,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                 .map((o) => o.dy)
                                 .reduce((dy1, dy2) => max(dy1, dy2));
 
-                            return dyMax - cy + _theme.buttonSize / 2;
+                            return dyMax - cy + _buttonH / 2;
                           }
 
                           double? getBottomDistance() {
@@ -451,7 +457,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                 .map((o) => o.dy)
                                 .reduce((dy1, dy2) => min(dy1, dy2));
 
-                            return ch - dyMin + cy + _theme.buttonSize / 2;
+                            return ch - dyMin + cy + _buttonH / 2;
                           }
 
                           return Positioned(
@@ -684,8 +690,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       final pointerDistance = (_pointerOffset - offset).distance;
 
       if (withinSafeDistance ||
-          pointerDistance < _theme.radius - _theme.buttonSize * 0.5 ||
-          pointerDistance > _theme.radius + _theme.buttonSize * 0.8) {
+          pointerDistance < _theme.radius - min(_buttonW, _buttonH) * 0.5 ||
+          pointerDistance > _theme.radius + max(_buttonW, _buttonH) * 0.8) {
         hover(null);
       } else {
         var closestDistance = double.infinity;
@@ -700,7 +706,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           }
         }
 
-        hover(closestDistance < _theme.buttonSize * 0.8 ? closestAction : null);
+        final hoverThreshold = 0.8 * max(_buttonW, _buttonH);
+        hover(closestDistance < hoverThreshold ? closestAction : null);
       }
     } else if (_pressed && _isBeyondPointerBounds(offset)) {
       _detachMenu(animate: false);
