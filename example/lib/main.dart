@@ -345,13 +345,18 @@ class StylingPage extends StatelessWidget {
   }
 
   Widget _buildTextButton(String text, bool hovered) {
-    return Text(
-      text,
-      style: TextStyle(
-        color: hovered ? Colors.black : Colors.white,
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-      ),
+    return Row(
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            color: hovered ? Colors.black : Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Icon(Icons.abc, color: hovered ? Colors.black : Colors.white),
+      ],
     );
   }
 }
