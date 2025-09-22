@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -142,39 +141,6 @@ class StylingPage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: PieMenu(
-                            actions: [
-                              PieAction(
-                                tooltip: const Text('Play'),
-                                onSelect: () => context.showSnackBar('Play'),
-
-                                /// Optical correction
-                                child: const Padding(
-                                  padding: EdgeInsets.only(left: 4),
-                                  child: FaIcon(FontAwesomeIcons.play),
-                                ),
-                              ),
-                              PieAction(
-                                tooltip: const Text('Like'),
-                                onSelect: () => context.showSnackBar('Like'),
-                                child: const FaIcon(
-                                  FontAwesomeIcons.solidThumbsUp,
-                                ),
-                              ),
-                              PieAction(
-                                tooltip: const Text('Share'),
-                                onSelect: () => context.showSnackBar('Share'),
-                                child: const FaIcon(FontAwesomeIcons.share),
-                              ),
-                            ],
-                            child: _buildCard(
-                              color: Colors.orangeAccent,
-                              iconData: FontAwesomeIcons.solidSun,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: spacing),
-                        Expanded(
-                          child: PieMenu(
                             theme: PieTheme.of(context).copyWith(
                               buttonTheme: const PieButtonTheme(
                                 backgroundColor: Colors.deepOrange,
@@ -228,94 +194,6 @@ class StylingPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(width: spacing),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: PieMenu(
-                            theme: PieTheme.of(context).copyWith(
-                              tooltipTextStyle: const TextStyle(
-                                color: Colors.white,
-                              ),
-                              overlayColor: Colors.teal.withValues(alpha: 0.7),
-                              pointerSize: 40,
-                              pointerDecoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.red.withValues(alpha: 0.5),
-                              ),
-                              buttonTheme: const PieButtonTheme(
-                                backgroundColor: Colors.black,
-                                iconColor: Colors.white,
-                              ),
-                              buttonThemeHovered: const PieButtonTheme(
-                                backgroundColor: Colors.white,
-                                iconColor: Colors.black,
-                              ),
-                              buttonSize: 84,
-                              leftClickShowsMenu: false,
-                              rightClickShowsMenu: true,
-                            ),
-                            onPressedWithDevice: (kind) {
-                              if (kind == PointerDeviceKind.mouse) {
-                                context.showSnackBar(
-                                  'Right click to show the menu',
-                                );
-                              }
-                            },
-                            actions: [
-                              PieAction(
-                                tooltip: const Text('Available on pub.dev'),
-                                onSelect: () {
-                                  launchUrlExternally(
-                                    'https://pub.dev/packages/pie_menu',
-                                  );
-                                },
-                                child: const FaIcon(FontAwesomeIcons.boxOpen),
-                              ),
-                              PieAction(
-                                tooltip: const Text('Highly customizable'),
-                                onSelect: () {
-                                  launchUrlExternally(
-                                    'https://pub.dev/packages/pie_menu',
-                                  );
-                                },
-
-                                /// Custom background color
-                                buttonTheme: PieButtonTheme(
-                                  backgroundColor:
-                                      Colors.black.withValues(alpha: 0.7),
-                                  iconColor: Colors.white,
-                                ),
-                                child: const FaIcon(FontAwesomeIcons.palette),
-                              ),
-                              PieAction(
-                                tooltip:
-                                    const Text('Now with right click support!'),
-                                buttonTheme: PieButtonTheme(
-                                  backgroundColor:
-                                      Colors.black.withValues(alpha: 0.5),
-                                  iconColor: Colors.white,
-                                ),
-                                onSelect: () {
-                                  launchUrlExternally(
-                                    'https://pub.dev/packages/pie_menu',
-                                  );
-                                },
-                                child: const FaIcon(
-                                  FontAwesomeIcons.computerMouse,
-                                ),
-                              ),
-                            ],
-                            child: _buildCard(
-                              color: Colors.teal,
-                              iconData: FontAwesomeIcons.solidHeart,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -324,55 +202,55 @@ class StylingPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildCard({
-    Color? color,
-    required IconData iconData,
-  }) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
+Widget _buildCard({
+  Color? color,
+  required IconData iconData,
+}) {
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Center(
+      child: FaIcon(
+        iconData,
+        color: Colors.white,
+        size: 64,
       ),
-      child: Center(
-        child: FaIcon(
-          iconData,
-          color: Colors.white,
-          size: 64,
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildTextButton(String text, bool hovered) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: hovered ? Colors.lime[200] : Colors.black,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Text(
-            text,
-            style: TextStyle(
-              color: hovered ? Colors.black : Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
+Widget _buildTextButton(String text, bool hovered) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    decoration: BoxDecoration(
+      color: hovered ? Colors.lime[200] : Colors.black,
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Row(
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            color: hovered ? Colors.black : Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
-          Icon(Icons.abc, color: hovered ? Colors.black : Colors.white),
-        ],
-      ),
-    );
-  }
+        ),
+        Icon(Icons.abc, color: hovered ? Colors.black : Colors.white),
+      ],
+    ),
+  );
 }
 
 //* list view example *//
 class ListViewPage extends StatelessWidget {
   const ListViewPage({super.key});
 
-  static const spacing = 20.0;
+  final double spacing = 20.0;
 
   @override
   Widget build(BuildContext context) {
@@ -385,7 +263,7 @@ class ListViewPage extends StatelessWidget {
       ),
       physics: const BouncingScrollPhysics(),
       itemCount: 16,
-      separatorBuilder: (context, index) => const SizedBox(height: spacing),
+      separatorBuilder: (context, index) => SizedBox(height: spacing),
       itemBuilder: (context, index) {
         return SizedBox(
           height: 200,
