@@ -143,82 +143,66 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   Size get _canvasSize => _canvasRenderBox?.size ?? Size.zero;
-
   double get cw => _canvasSize.width;
   double get ch => _canvasSize.height;
-
   double get cx => _canvasOffset.dx;
   double get cy => _canvasOffset.dy;
-
   double get px => _pointerOffset.dx - cx;
   double get py => _pointerOffset.dy - cy;
 
-  // Effective dimensions (backwards compatible with buttonSize).
+  // Effective button dimensions
   double get _buttonW => _theme.buttonWidth;
   double get _buttonH => _theme.buttonHeight;
 
-  double get _buttonDiagonal => sqrt(_buttonW * _buttonW + _buttonH * _buttonH);
+  /// Detect whether near edges/corners, then reduce the angle span accordingly.
+  double get _maxAllowedArc {
+    return _actions.length * _theme.radius / 4;
+  }
 
   double get _angleDiff {
     final customAngleDiff = _theme.customAngleDiff;
     if (customAngleDiff != null) return customAngleDiff;
 
-    final tangent = (_buttonDiagonal / 2 + _theme.spacing) / _theme.radius;
-    final angleInRadians = 2 * asin(tangent);
-    return degrees(angleInRadians);
+    if (_actions.isEmpty || _actions.length == 1) return 0;
+
+    final arc = _maxAllowedArc;
+    return arc / (_actions.length - 1);
   }
 
-  /// Angle of the first [PieButton] in degrees.
+  /// Base angle ensures the arc bends inward into the screen.
   double get _baseAngle {
     final arc = (_actions.length - 1) * _angleDiff;
-    final customAngle = _theme.customAngle;
 
-    if (customAngle != null) {
-      switch (_theme.customAngleAnchor) {
-        case PieAnchor.start:
-          return customAngle;
-        case PieAnchor.center:
-          return customAngle + arc / 2;
-        case PieAnchor.end:
-          return customAngle + arc;
-      }
+    final margin = _theme.radius + max(_buttonW, _buttonH);
+    final atLeft = px < margin;
+    final atRight = px > cw - margin;
+    final atTop = py < margin;
+    final atBottom = py > ch - margin;
+
+    // Default orientation = right
+    double base = 0;
+
+    if (atTop && !atBottom) {
+      base = 270; // open downward
+    } else if (atBottom && !atTop) {
+      base = 90; // open upward
+    }
+    if (atLeft && !atRight) {
+      base = 0; // open right
+    } else if (atRight && !atLeft) {
+      base = 180; // open left
+    }
+    if (atLeft && atTop) {
+      base = 315; // open down-right
+    } else if (atLeft && atBottom) {
+      base = 45; // open up-right
+    } else if (atRight && atTop) {
+      base = 225; // open down-left
+    } else if (atRight && atBottom) {
+      base = 135; // open up-left
     }
 
-    final mediaQuery = MediaQuery.of(context);
-    final padding = mediaQuery.padding;
-    final size = mediaQuery.size;
-
-    final cx = this.cx < padding.left ? padding.left : this.cx;
-    final cy = this.cy < padding.top ? padding.top : this.cy;
-    final cw = this.cx + this.cw > size.width - padding.right
-        ? size.width - padding.right - cx
-        : this.cw;
-    final ch = this.cy + this.ch > size.height - padding.bottom
-        ? size.height - padding.bottom - cy
-        : this.ch;
-
-    final px = _pointerOffset.dx - cx;
-    final py = _pointerOffset.dy - cy;
-
-    final p = Offset(px, py);
-    final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
-    final safeDistance = _theme.radius + max(_buttonW, _buttonH);
-
-    double angleBetween(Offset o1, Offset o2) {
-      final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
-      return degrees(atan(slope));
-    }
-
-    if ((ch >= 2 * safeDistance && py < safeDistance) ||
-        (ch < 2 * safeDistance && py < ch / 2)) {
-      final o = px < cw / 2 ? const Offset(0, 0) : Offset(cw, 0);
-      return arc / 2 - 90 + angleBetween(o, p);
-    } else if (py > ch - safeDistance && (px < cw * 2 / 5 || px > cw * 3 / 5)) {
-      final o = px < cw / 2 ? Offset(0, ch) : Offset(cw, ch);
-      return arc / 2 + 90 + angleBetween(o, p);
-    } else {
-      return arc / 2 + 90 - 90 * distanceFactor;
-    }
+    return base + arc / 2; // center arc around chosen base
   }
 
   double _getActionAngle(int index) {
@@ -228,8 +212,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   Offset _getActionOffset(int index) {
     final angle = _getActionAngle(index);
     return Offset(
-      _pointerOffset.dx + _theme.radius * cos(angle),
-      _pointerOffset.dy - _theme.radius * sin(angle),
+      _pointerOffset.dx + (_theme.radius) * cos(angle),
+      _pointerOffset.dy - (_theme.radius) * sin(angle),
     );
   }
 
@@ -336,7 +320,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                   },
                   child: Stack(
                     children: [
-                      //* overlay start *//
+                      // Overlay
                       if (menuRenderBox != null && menuRenderBox.attached)
                         ...() {
                           switch (_theme.overlayStyle) {
@@ -393,9 +377,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                               ];
                           }
                         }(),
-                      //* overlay end *//
-
-                      //* tooltip start *//
+                      // Tooltip
                       () {
                         final tooltipAlignment = _theme.tooltipCanvasAlignment;
 
@@ -434,35 +416,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             child: child,
                           );
                         } else {
-                          final offsets = [
-                            _pointerOffset,
-                            for (var i = 0; i < _actions.length; i++)
-                              _getActionOffset(i),
-                          ];
-
-                          double? getTopDistance() {
-                            if (py >= ch / 2) return null;
-
-                            final dyMax = offsets
-                                .map((o) => o.dy)
-                                .reduce((dy1, dy2) => max(dy1, dy2));
-
-                            return dyMax - cy + _buttonH / 2;
-                          }
-
-                          double? getBottomDistance() {
-                            if (py < ch / 2) return null;
-
-                            final dyMin = offsets
-                                .map((o) => o.dy)
-                                .reduce((dy1, dy2) => min(dy1, dy2));
-
-                            return ch - dyMin + cy + _buttonH / 2;
-                          }
-
                           return Positioned(
-                            top: getTopDistance(),
-                            bottom: getBottomDistance(),
+                            top: 0,
+                            bottom: 0,
                             left: 0,
                             right: 0,
                             child: Align(
@@ -474,9 +430,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                           );
                         }
                       }(),
-                      //* tooltip end *//
-
-                      //* action buttons start *//
+                      // Buttons
                       Flow(
                         delegate: PieDelegate(
                           bounceAnimation: _buttonBounceAnimation,
@@ -511,7 +465,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             ),
                         ],
                       ),
-                      //* action buttons end *//
                     ],
                   ),
                 ),
@@ -551,7 +504,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     );
 
     _theme = theme;
-
     _contextMenuSubscription = _platform.listenContextMenu(
       shouldPreventDefault: rightClicked,
     );
@@ -561,7 +513,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     if (!_pressed) {
       _pressed = true;
-
       menuAlignment ??= _theme.menuAlignment;
       menuDisplacement ??= _theme.menuDisplacement;
 
@@ -601,13 +552,11 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           menuKey: menuKey,
           clearHoveredAction: true,
         );
-
         _notifyToggleListeners(menuOpen: true);
       });
     }
   }
 
-  /// Closes the currently attached menu if the given [menuKey] matches.
   void closeMenu(Key menuKey) {
     if (menuKey == _notifier.state.menuKey) {
       _detachMenu();
@@ -651,20 +600,16 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     if (_state.menuOpen) {
       if (_pressedAgain || _isBeyondPointerBounds(offset)) {
         final hoveredAction = _state.hoveredAction;
-
         if (hoveredAction != null) {
           _actions[hoveredAction].onSelect();
         }
-
         _notifier.update(menuOpen: false);
         _notifyToggleListeners(menuOpen: false);
-
         _detachMenu();
       }
     } else if (!_theme.regularPressShowsMenu) {
       _detachMenu();
     }
-
     _pressed = false;
     _pressedAgain = false;
     _pressedOffset = _pointerOffset;
@@ -682,7 +627,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       }
 
       final withinSafeDistance = (_pressedOffset - offset).distance < 8;
-
       if (_pressedOffset != _pointerOffset && !withinSafeDistance) {
         _pressedOffset = _pointerOffset;
       }
@@ -696,7 +640,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       } else {
         var closestDistance = double.infinity;
         var closestAction = 0;
-
         for (var i = 0; i < _actions.length; i++) {
           final actionOffset = _getActionOffset(i);
           final distance = (actionOffset - offset).distance;
@@ -705,7 +648,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
             closestAction = i;
           }
         }
-
         final hoverThreshold = 0.8 * max(_buttonW, _buttonH);
         hover(closestDistance < hoverThreshold ? closestAction : null);
       }
@@ -730,12 +672,10 @@ class OverlayPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint();
     paint.color = color;
-
     final path = Path();
     path.addRect(Rect.fromLTWH(0, 0, size.width, size.height));
     path.addRect(menuOffset & menuSize);
     path.fillType = PathFillType.evenOdd;
-
     canvas.drawPath(path, paint);
   }
 

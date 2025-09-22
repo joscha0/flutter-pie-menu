@@ -152,36 +152,28 @@ class StylingPage extends StatelessWidget {
                               ),
                               brightness: Brightness.dark,
                               buttonHeight: 40,
-                              buttonWidth: 70,
+                              buttonWidth: 120,
                             ),
                             actions: [
                               PieAction.builder(
                                 tooltip: const Text('how'),
                                 onSelect: () => context.showSnackBar('1'),
                                 builder: (hovered) {
-                                  return _buildTextButton('1', hovered);
+                                  return _buildTextButton('test 1', hovered);
                                 },
                               ),
                               PieAction.builder(
                                 tooltip: const Text('cool'),
                                 onSelect: () => context.showSnackBar('2'),
                                 builder: (hovered) {
-                                  return _buildTextButton('2', hovered);
+                                  return _buildTextButton('test 2', hovered);
                                 },
                               ),
                               PieAction.builder(
                                 tooltip: const Text('is'),
                                 onSelect: () => context.showSnackBar('3'),
                                 builder: (hovered) {
-                                  return _buildTextButton('3', hovered);
-                                },
-                              ),
-                              PieAction.builder(
-                                tooltip: const Text('this?!'),
-                                onSelect: () =>
-                                    context.showSnackBar('Pretty cool :)'),
-                                builder: (hovered) {
-                                  return _buildTextButton('4', hovered);
+                                  return _buildTextButton('test 3', hovered);
                                 },
                               ),
                             ],
