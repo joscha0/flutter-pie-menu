@@ -161,14 +161,33 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return 180;
   }
 
+  /// Calculate the minimum angle difference needed to prevent button overlap.
+  /// Uses the button diagonal to account for rectangular buttons at any angle.
+  double get _minAngleDiff {
+    if (_actions.isEmpty || _actions.length == 1) return 0;
+
+    // Use the diagonal of the button to account for rectangular buttons
+    // at diagonal angles where they could overlap
+    final buttonDiagonal = sqrt(_buttonW * _buttonW + _buttonH * _buttonH);
+    final minArcLength = buttonDiagonal + _theme.spacing;
+
+    // Arc length = radius * angle (in radians)
+    // So angle = arc length / radius
+    final minAngleRadians = minArcLength / _theme.radius;
+
+    // Convert to degrees
+    return degrees(minAngleRadians);
+  }
+
   double get _angleDiff {
     final customAngleDiff = _theme.customAngleDiff;
     if (customAngleDiff != null) return customAngleDiff;
 
     if (_actions.isEmpty || _actions.length == 1) return 0;
 
-    final arc = _maxAllowedArc;
-    return arc / (_actions.length - 1);
+    // Use the larger of: evenly distributed arc, or minimum to prevent overlap
+    final evenlyDistributed = _maxAllowedArc / (_actions.length - 1);
+    return max(evenlyDistributed, _minAngleDiff);
   }
 
   /// Whether the menu buttons should be rendered in reverse order.
