@@ -171,6 +171,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return arc / (_actions.length - 1);
   }
 
+  /// Whether the menu buttons should be rendered in reverse order.
+  /// This ensures consistent visual ordering regardless of menu side.
+  bool get _shouldReverseOrder {
+    final margin = _theme.radius + max(_buttonW, _buttonH);
+    final atRight = px > cw - margin;
+    return atRight;
+  }
+
   /// Base angle ensures the arc bends inward into the screen.
   double get _baseAngle {
     final arc = (_actions.length - 1) * _angleDiff;
@@ -208,7 +216,11 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   double _getActionAngle(int index) {
-    return radians(_baseAngle - _theme.angleOffset - _angleDiff * index);
+    final effectiveIndex =
+        _shouldReverseOrder ? (_actions.length - 1 - index) : index;
+    return radians(
+      _baseAngle - _theme.angleOffset - _angleDiff * effectiveIndex,
+    );
   }
 
   Offset _getActionOffset(int index) {
@@ -441,6 +453,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                           baseAngle: _baseAngle,
                           angleDiff: _angleDiff,
                           theme: _theme,
+                          actionCount: _actions.length,
+                          shouldReverseOrder: _shouldReverseOrder,
                         ),
                         children: [
                           DecoratedBox(
