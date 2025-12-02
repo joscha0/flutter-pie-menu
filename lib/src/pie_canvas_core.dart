@@ -161,41 +161,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return 180;
   }
 
-  /// Calculate the minimum angle difference needed to prevent button overlap.
-  /// Uses the button diagonal to account for rectangular buttons at any angle.
-  double get _minAngleDiff {
-    if (_actions.isEmpty || _actions.length == 1) return 0;
-
-    // Use the diagonal of the button to account for rectangular buttons
-    // at diagonal angles where they could overlap
-    final buttonDiagonal = sqrt(_buttonW * _buttonW + _buttonH * _buttonH);
-    final minArcLength = buttonDiagonal + _theme.spacing;
-
-    // Arc length = radius * angle (in radians)
-    // So angle = arc length / radius
-    final minAngleRadians = minArcLength / _theme.radius;
-
-    // Convert to degrees
-    return degrees(minAngleRadians);
-  }
-
   double get _angleDiff {
     final customAngleDiff = _theme.customAngleDiff;
     if (customAngleDiff != null) return customAngleDiff;
 
     if (_actions.isEmpty || _actions.length == 1) return 0;
 
-    // Use the larger of: evenly distributed arc, or minimum to prevent overlap
-    final evenlyDistributed = _maxAllowedArc / (_actions.length - 1);
-    return max(evenlyDistributed, _minAngleDiff);
-  }
-
-  /// Whether the menu buttons should be rendered in reverse order.
-  /// This ensures consistent visual ordering regardless of menu side.
-  bool get _shouldReverseOrder {
-    final margin = _theme.radius + max(_buttonW, _buttonH);
-    final atRight = px > cw - margin;
-    return atRight;
+    final arc = _maxAllowedArc;
+    return arc / (_actions.length - 1);
   }
 
   /// Base angle ensures the arc bends inward into the screen.
@@ -235,11 +208,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   double _getActionAngle(int index) {
-    final effectiveIndex =
-        _shouldReverseOrder ? (_actions.length - 1 - index) : index;
-    return radians(
-      _baseAngle - _theme.angleOffset - _angleDiff * effectiveIndex,
-    );
+    return radians(_baseAngle - _theme.angleOffset - _angleDiff * index);
   }
 
   Offset _getActionOffset(int index) {
@@ -472,8 +441,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                           baseAngle: _baseAngle,
                           angleDiff: _angleDiff,
                           theme: _theme,
-                          actionCount: _actions.length,
-                          shouldReverseOrder: _shouldReverseOrder,
                         ),
                         children: [
                           DecoratedBox(

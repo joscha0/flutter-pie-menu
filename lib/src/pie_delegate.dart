@@ -16,8 +16,6 @@ class PieDelegate extends FlowDelegate {
     required this.baseAngle,
     required this.angleDiff,
     required this.theme,
-    required this.actionCount,
-    required this.shouldReverseOrder,
   }) : super(repaint: bounceAnimation);
 
   /// Bouncing animation for the buttons.
@@ -38,12 +36,6 @@ class PieDelegate extends FlowDelegate {
   /// Theme to use for the [PieMenu].
   final PieTheme theme;
 
-  /// Number of actions in the menu.
-  final int actionCount;
-
-  /// Whether to reverse the order of actions for consistent visual ordering.
-  final bool shouldReverseOrder;
-
   @override
   bool shouldRepaint(PieDelegate oldDelegate) {
     return bounceAnimation != oldDelegate.bounceAnimation;
@@ -57,12 +49,8 @@ class PieDelegate extends FlowDelegate {
 
     for (var i = 0; i < count; ++i) {
       final size = context.getChildSize(i)!;
-      // i == 0 is the center pointer, actions start at i == 1
-      final actionIndex = i - 1;
-      final effectiveIndex =
-          shouldReverseOrder ? (actionCount - 1 - actionIndex) : actionIndex;
       final angleInRadians =
-          radians(baseAngle - theme.angleOffset - angleDiff * effectiveIndex);
+          radians(baseAngle - theme.angleOffset - angleDiff * (i - 1));
       if (i == 0) {
         context.paintChild(
           i,
